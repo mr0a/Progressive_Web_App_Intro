@@ -5,8 +5,24 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Status Report</title>
+    <link rel="stylesheet" href="./assets/vendor/css/bootstrap.min.css">
 </head>
 <body>
-    <h1>Content</h1>
+    <div class="container" x-data="projectList" x-init="init()">
+        <h3>Status Report</h3>
+
+        <template x-for="(task, index) in tasks" x-key="index">
+            <div class="card" :class="{ 'bg-success text-white': task.complete }">
+                <div class="card-body">
+                    <h5 class="card-title" x-html="task.name"></h5>
+                    <p class="card-text" x-html="task.description"></p>
+                </div>
+            </div>
+        </template>
+    </div>
+
+
 </body>
+<script src="./assets/vendor/js/alpine.js"></script>
+<script src="./assets/js/app.js"></script>r
 </html>
