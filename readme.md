@@ -10,5 +10,12 @@
 ### Basic needs of PWA
 - Serve files in HTTPS (localhost is good to go).
 - `manifest.json` file contains the information about the application.
-- `serviceworker.js`
+- `serviceworker.js` - to create a service worker which will be used to cache files, push notifications, etc.
 - Create a report with Lighthouse from any chromium based browser to check the performance and pwa aspects of the website.
+- In the report we can notice the requirements of a pwa.
+
+### Service Worker
+- It is an event driven javascript file.
+- Hook some events and do something when the event occurs.
+- First we need to register the service worker in `app.js` (main js) file.
+- 
