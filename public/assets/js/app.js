@@ -10,9 +10,23 @@ window.projectList = (function () {
 
     return {
         tasks: [],
+        isOffline: false,
         init() {
-            fetch('data.json').then(res => res.json()).then(data => {
+            fetch('data.json').then(res =>{
+                if (res.headers.get('sw-cache')){
+                    this.isOffline = true;
+                }
+                return res.json();
+            }).then(data => {
                 this.tasks = data.tasks;
+            });
+
+            window.addEventListener('offline', e =>{
+                this.isOffline = true
+            });
+
+            window.addEventListener('online', e => {
+                this.isOffline = false
             });
         }
     };
