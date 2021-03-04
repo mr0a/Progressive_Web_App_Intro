@@ -19,7 +19,9 @@
         </template>
 
         <template x-for="(task, index) in tasks" x-key="index">
-            <div class="card" :class="{ 'bg-success text-white': task.complete }">
+            <div class="card" 
+                :class="{ 'bg-success text-white': task.complete, 'bg-warning': marked.indexOf(task) > -1 }"
+                @click="toggleComplete(task)">
                 <div class="card-body">
                     <h5 class="card-title" x-html="task.name"></h5>
                     <p class="card-text" x-html="task.description"></p>
@@ -31,5 +33,6 @@
 
 </body>
 <script src="./assets/vendor/js/alpine.js"></script>
+<script src="./assets/vendor/js/idb-keyval.js"></script>
 <script src="./assets/js/app.js"></script>
 </html>

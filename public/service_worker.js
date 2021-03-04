@@ -8,15 +8,16 @@ const preCache = [
         name: staticCacheName,
         urls: [
             './',
-            './index.html',
             './assets/vendor/css/bootstrap.min.css',
             './assets/vendor/js/alpine.js',
-            './assets/js/app.js'
+            './assets/vendor/js/idb-keyval.js'
         ]
     },
     {
         name: dynamicCacheName,
         urls: [
+            './index.html',
+            './assets/js/app.js',
             './data.json'
         ]
     }
@@ -49,32 +50,32 @@ async function clearOldCache(keysToKeep) {
 
 }
 
-async function getResponseFor(req){
+async function getResponseFor(req) {
     let staticCache = await caches.open(staticCacheName);
     let cacheRes = await staticCache.match(req);
 
     //Serving static cache
-    if (cacheRes){
+    if (cacheRes) {
         return cacheRes
     }
 
     let dynamicCache = await caches.open(dynamicCacheName);
 
-    try{
+    try {
         let res = await fetch(req);
         cacheRes = await dynamicCache.match(req);
 
         // Updating dynamic cache if the cache for the req exists
-        if (cacheRes){
+        if (cacheRes) {
             await dynamicCache.put(req, res.clone());
         }
 
         return res;
-    } catch(err) {
+    } catch (err) {
         // Response from dynamic cache when error occured in fetch
         return await addCacheHeader(await dynamicCache.match(req));
     }
-    
+
 }
 
 
@@ -98,6 +99,6 @@ self.addEventListener('install', e => {
 self.addEventListener('fetch', e => {
     e.respondWith(
         getResponseFor(e.request)
-        );
-        // caches.match(e.request).then(async res => (await addCacheHeader(res)) || fetch(e.request))
+    );
+    // caches.match(e.request).then(async res => (await addCacheHeader(res)) || fetch(e.request))
 });
