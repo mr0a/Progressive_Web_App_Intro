@@ -1,4 +1,4 @@
-const version = 6;
+const version = 2;
 
 const staticCacheName = `static-v${version}`;
 const dynamicCacheName = `dynamic-v${version}`;
@@ -49,6 +49,34 @@ async function clearOldCache(keysToKeep) {
 
 }
 
+async function getResponseFor(req){
+    let staticCache = await caches.open(staticCacheName);
+    let cacheRes = await staticCache.match(req);
+
+    //Serving static cache
+    if (cacheRes){
+        return cacheRes
+    }
+
+    let dynamicCache = await caches.open(dynamicCacheName);
+
+    try{
+        let res = await fetch(req);
+        cacheRes = await dynamicCache.match(req);
+
+        // Updating dynamic cache if the cache for the req exists
+        if (cacheRes){
+            await dynamicCache.put(req, res.clone());
+        }
+
+        return res;
+    } catch(err) {
+        // Response from dynamic cache when error occured in fetch
+        return await addCacheHeader(await dynamicCache.match(req));
+    }
+    
+}
+
 
 self.addEventListener('install', e => {
     console.log("The SW is installed");
@@ -60,9 +88,6 @@ self.addEventListener('install', e => {
                 }).then(() => self.skipWaiting()); // Skipwaiting when new sw is installed
         })
     ));
-    // e.waitUntil(
-    //     caches.open(cacheName).then(cache => cache.addAll(preCache))
-    // )
 
     self.addEventListener('activate', e => {
         e.waitUntil(clearOldCache(preCache.map(obj => obj.name)))
@@ -72,6 +97,7 @@ self.addEventListener('install', e => {
 
 self.addEventListener('fetch', e => {
     e.respondWith(
-        caches.match(e.request).then(async res => (await addCacheHeader(res)) || fetch(e.request))
-    );
+        getResponseFor(e.request)
+        );
+        // caches.match(e.request).then(async res => (await addCacheHeader(res)) || fetch(e.request))
 });
