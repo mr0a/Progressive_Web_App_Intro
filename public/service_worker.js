@@ -1,4 +1,6 @@
-const version = 2;
+self.importScripts('./assets/vendor/js/idb-keyval.js');
+
+const version = 3;
 
 const staticCacheName = `static-v${version}`;
 const dynamicCacheName = `dynamic-v${version}`;
@@ -78,6 +80,15 @@ async function getResponseFor(req) {
 
 }
 
+async function syncReport(){
+    let changed = await idbKeyval.get('changed');
+    
+    if (changed && changed.length > 0){
+        console.log("Send report to server");
+        await idbKeyval.set('changed', []);
+    }
+}
+
 
 self.addEventListener('install', e => {
     console.log("The SW is installed");
@@ -100,5 +111,10 @@ self.addEventListener('fetch', e => {
     e.respondWith(
         getResponseFor(e.request)
     );
-    // caches.match(e.request).then(async res => (await addCacheHeader(res)) || fetch(e.request))
 });
+
+self.addEventListener('sync', e => {
+    if (e.tag === 'sync-report') {
+        e.waitUntil(syncReport());
+    }
+})

@@ -18,7 +18,7 @@ window.projectList = (function () {
 
     function addToDb(id, complete){
         return getDbValue().then(val => {
-            console.log(val);
+            // console.log(val);
             val.push({id, complete});
             return setDbValue(val);
         })
@@ -75,6 +75,12 @@ window.projectList = (function () {
                     // Add it to marked as it doesnot exist
                     addToDb(task.id, newVal).then(() => this.marked.push(task));
                     // this.marked.push(task);
+                }
+
+                if('SyncManager' in window){
+                    navigator.serviceWorker.ready.then(reg => {
+                        reg.sync.register('sync-report');
+                    });
                 }
             }
         }
