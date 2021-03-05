@@ -117,4 +117,38 @@ self.addEventListener('sync', e => {
     if (e.tag === 'sync-report') {
         e.waitUntil(syncReport());
     }
+});
+
+self.addEventListener('notificationclick', e => {
+    let notification = e.notification;
+    let taskId = notification.data.taskId;
+    let action = e.action;
+
+    console.log(e);
+
+    if (action === 'close'){
+        console.log("Closed");
+    }else if (action == 'incomplete'){
+        // notification.close();
+        console.log("Make this task incomplete");
+    } else {
+        clients.openWindow('http://localhost:3000');
+    }
+    notification.close();
+});
+
+self.addEventListener('notificationclose', e => {
+    console.log("Close")
+});
+
+self.addEventListener('push', e => {
+    let body = 'There was no data with push';
+
+    if (e.data){
+        body = e.data.text();
+    }
+
+    e.waitUntil(
+        self.registration.showNotification('Push Notification', {body})
+    );
 })

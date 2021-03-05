@@ -6,7 +6,7 @@ window.projectList = (function () {
 
             Notification.requestPermission(status => {
                 if (status === 'granted'){
-                    new Notification('Thank you!!!'); // Notification constructor
+                    // new Notification('Thank you!!!'); // Notification constructor
                 };
             });
         }).catch(err => {
@@ -57,6 +57,10 @@ window.projectList = (function () {
                             action: 'incomplete',
                             title: 'Mark as Incomplete'
                         },
+                        {
+                            action: 'confirm',
+                            title: 'I confirm'
+                        }
                     ]
 
                 };
