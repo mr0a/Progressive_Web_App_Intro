@@ -6,8 +6,8 @@ window.projectList = (function () {
 
             Notification.requestPermission(status => {
                 if (status === 'granted'){
-                    new Notification('Thank you!!!');
-                }
+                    new Notification('Thank you!!!'); // Notification constructor
+                };
             });
         }).catch(err => {
             console.log("Error while registering sw");
@@ -42,6 +42,31 @@ window.projectList = (function () {
         });
     }
 
+    function displayCompleteNotification(task){
+        if (Notification.permission === 'granted'){
+            navigator.serviceWorker.getRegistration().then(reg => {
+                let options = {
+                    body: 'You Completed a Task',
+                    // icon: 'path',
+                    // vibrate: [100, 25, 100],
+                    data: {
+                        taskId: task.id
+                    },
+                    actions: [
+                        {
+                            action: 'incomplete',
+                            title: 'Mark as Incomplete'
+                        },
+                    ]
+
+                };
+                reg.showNotification('Task Completed', options);
+
+            });
+        };
+    }
+
+
     return {
         tasks: [],
         marked: [],
@@ -66,6 +91,10 @@ window.projectList = (function () {
         },
         toggleComplete(task){
             let newVal = !task.complete;
+
+            if (newVal){
+                displayCompleteNotification(task);
+            }
 
             if (!this.isOffline) {
                 task.complete = newVal;
