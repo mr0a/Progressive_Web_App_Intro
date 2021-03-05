@@ -8,6 +8,34 @@ window.projectList = (function () {
         })
     }
 
+    function getDbValue() {
+        return idbKeyval.get('changed').then(val => val || []);
+    }
+
+    function setDbValue(val) {
+        return idbKeyval.set('changed', val);
+    }
+
+    function addToDb(id, complete){
+        return getDbValue().then(val => {
+            console.log(val);
+            val.push({id, complete});
+            return setDbValue(val);
+        })
+    }
+
+    function removeFromDb(id){
+        return getDbValue().then(val => {
+            let index = val.findIndex(obj => obj.id == id);
+
+            if (index > -1){
+                val.splice(index, 1);
+            }
+
+            return setDbValue(val);
+        });
+    }
+
     return {
         tasks: [],
         marked: [],
@@ -32,7 +60,6 @@ window.projectList = (function () {
         },
         toggleComplete(task){
             let newVal = !task.complete;
-            console.log(this.marked);
 
             if (!this.isOffline) {
                 task.complete = newVal;
@@ -41,11 +68,13 @@ window.projectList = (function () {
                 let index = this.marked.indexOf(task);
 
                 if (index > -1){
-                    // Remove from marked since it exists and clicked 2nd time
-                    this.marked.splice(index, 1);
+                    // User changes doesnot want to update this task
+                    removeFromDb(task.id).then(() => this.marked.splice(index, 1));
+                    // this.marked.splice(index, 1);
                 } else {
                     // Add it to marked as it doesnot exist
-                    this.marked.push(task);
+                    addToDb(task.id, newVal).then(() => this.marked.push(task));
+                    // this.marked.push(task);
                 }
             }
         }
