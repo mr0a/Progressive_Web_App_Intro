@@ -3,6 +3,12 @@ window.projectList = (function () {
     if ('serviceWorker' in navigator){
         navigator.serviceWorker.register('./service_worker.js').then(reg => {
             console.log("Successfully registered");
+
+            Notification.requestPermission(status => {
+                if (status === 'granted'){
+                    new Notification('Thank you!!!');
+                }
+            });
         }).catch(err => {
             console.log("Error while registering sw");
         })
