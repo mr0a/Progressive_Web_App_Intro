@@ -10,6 +10,7 @@ const preCache = [
         name: staticCacheName,
         urls: [
             './',
+            './index.html',
             './assets/vendor/css/bootstrap.min.css',
             './assets/vendor/js/alpine.js',
             './assets/vendor/js/idb-keyval.js'
@@ -18,7 +19,7 @@ const preCache = [
     {
         name: dynamicCacheName,
         urls: [
-            './index.html',
+            
             './assets/js/app.js',
             './data.json'
         ]
